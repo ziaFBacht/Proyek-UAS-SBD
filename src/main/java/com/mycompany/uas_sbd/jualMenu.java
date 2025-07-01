@@ -474,6 +474,7 @@ public class jualMenu extends javax.swing.JFrame {
             PreparedStatement unlock = c.prepareStatement(
                 "UPDATE lock_status SET is_locked = FALSE, locked_by = NULL, locked_at = NULL WHERE id = 1"
             );
+            unlock.executeUpdate();
             
             JOptionPane.showMessageDialog(this, "Cancelled!");
             enableSaveRoll(false);
