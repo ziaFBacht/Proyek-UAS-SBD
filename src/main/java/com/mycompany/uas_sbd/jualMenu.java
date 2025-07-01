@@ -70,6 +70,31 @@ public class jualMenu extends javax.swing.JFrame {
         }
     }
     
+    private boolean requestLock(String username) {
+    try {
+        // Cek apakah sedang dikunci user lain
+        PreparedStatement ps = c.prepareStatement("SELECT is_locked, locked_by FROM lock_status WHERE id = 1");
+        ResultSet rs = ps.executeQuery();
+        if (rs.next() && rs.getBoolean("is_locked")) {
+            JOptionPane.showMessageDialog(this, "Record is edited by another user (" + rs.getString("locked_by") + ")");
+            return false;
+        }
+
+        // Ambil kunci
+        PreparedStatement lock = c.prepareStatement(
+            "UPDATE lock_status SET is_locked = TRUE, locked_by = ?, locked_at = NOW() WHERE id = 1"
+        );
+        lock.setString(1, username);
+        lock.executeUpdate();
+
+        return true;
+    } catch (SQLException ex) {
+        ex.printStackTrace();
+        return false;
+        }
+    }
+
+    
     private void clearSet(){
         kodeBarangText.setText(null);
         namaBarangText.setText(null);
@@ -353,93 +378,103 @@ public class jualMenu extends javax.swing.JFrame {
     private void insertButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertButtonActionPerformed
         // TODO add your handling code here:
         //JOptionPane.showMessageDialog(this, "inserted");
-        
-        String kd_brg = kodeBarangText.getText();
-        String nama_brg = namaBarangText.getText();
-        String satuan_brg = satuanText.getText();
-        String stok_brg = jumlahText.getText();
-        
-        try{
-            c.setAutoCommit(false);
-            String sql = "CALL insert_stok(?, ?, ?, ?);";
-            PreparedStatement stmt = c.prepareStatement(sql);
-            stmt.setString(1, kd_brg);
-            stmt.setString(2, nama_brg);
-            stmt.setString(3, satuan_brg);
-            stmt.setString(4, stok_brg);
-            stmt.executeUpdate();
-            
-            JOptionPane.showMessageDialog(this, "Inserted!");
+        if (requestLock("user123")) {
+            String kd_brg = kodeBarangText.getText();
+            String nama_brg = namaBarangText.getText();
+            String satuan_brg = satuanText.getText();
+            String stok_brg = jumlahText.getText();
 
-            // Refresh the table
-            loadContentsToTable();
-            enableSaveRoll(true);
-            
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Failed Command");
-        }
+            try{
+                c.setAutoCommit(false);
+                String sql = "CALL insert_stok(?, ?, ?, ?);";
+                PreparedStatement stmt = c.prepareStatement(sql);
+                stmt.setString(1, kd_brg);
+                stmt.setString(2, nama_brg);
+                stmt.setString(3, satuan_brg);
+                stmt.setString(4, stok_brg);
+                stmt.executeUpdate();
+
+                JOptionPane.showMessageDialog(this, "Inserted!");
+
+                // Refresh the table
+                loadContentsToTable();
+                enableSaveRoll(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Failed Command");
+            }
         clearSet();
+        }
     }//GEN-LAST:event_insertButtonActionPerformed
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
         // TODO add your handling code here:
-        String kd_brg = kodeBarangText.getText();
-        String nama_brg = namaBarangText.getText();
-        String satuan_brg = satuanText.getText();
-        String stok_brg = jumlahText.getText();
-        
-        try{
-            c.setAutoCommit(false);
-            String sql = "CALL update_stok(?, ?, ?, ?);";
-            PreparedStatement stmt = c.prepareStatement(sql);
-            stmt.setString(1, kd_brg);
-            stmt.setString(2, nama_brg);
-            stmt.setString(3, satuan_brg);
-            stmt.setString(4, stok_brg);
-            stmt.executeUpdate();
-            
-            JOptionPane.showMessageDialog(this, "Updated!");
-            
-            // Refresh the table
-            loadContentsToTable();
-            enableSaveRoll(true);
+        if (requestLock("user123")) {
+            String kd_brg = kodeBarangText.getText();
+            String nama_brg = namaBarangText.getText();
+            String satuan_brg = satuanText.getText();
+            String stok_brg = jumlahText.getText();
 
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Failed Command");
+            try{
+                c.setAutoCommit(false);
+                String sql = "CALL update_stok(?, ?, ?, ?);";
+                PreparedStatement stmt = c.prepareStatement(sql);
+                stmt.setString(1, kd_brg);
+                stmt.setString(2, nama_brg);
+                stmt.setString(3, satuan_brg);
+                stmt.setString(4, stok_brg);
+                stmt.executeUpdate();
+
+                JOptionPane.showMessageDialog(this, "Updated!");
+
+                // Refresh the table
+                loadContentsToTable();
+                enableSaveRoll(true);
+
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Failed Command");
+            }
+            clearSet();
         }
-        clearSet();
     }//GEN-LAST:event_editButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         // TODO add your handling code here:
         String kd_brg = kodeBarangText.getText();
         
-        try{
-            c.setAutoCommit(false);
-            String sql = "CALL delete_stok(?);";
-            PreparedStatement stmt = c.prepareStatement(sql);
-            stmt.setString(1, kd_brg);
-            stmt.executeUpdate();
+        if (requestLock("user123")) {
+            try{
+                c.setAutoCommit(false);
+                String sql = "CALL delete_stok(?);";
+                PreparedStatement stmt = c.prepareStatement(sql);
+                stmt.setString(1, kd_brg);
+                stmt.executeUpdate();
             
-            JOptionPane.showMessageDialog(this, "Deleted!");
+                JOptionPane.showMessageDialog(this, "Deleted!");
 
-            // Refresh the table
-            loadContentsToTable();
-            enableSaveRoll(true);
+                // Refresh the table
+                loadContentsToTable();
+                enableSaveRoll(true);
             
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            JOptionPane.showMessageDialog(this, "Failed Command");
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Failed Command");
+            }
+            clearSet();
         }
-        clearSet();
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void cancelButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_cancelButtonActionPerformed
         // TODO add your handling code here:
         try {
             c.rollback();
+            
+            PreparedStatement unlock = c.prepareStatement(
+                "UPDATE lock_status SET is_locked = FALSE, locked_by = NULL, locked_at = NULL WHERE id = 1"
+            );
+            
             JOptionPane.showMessageDialog(this, "Cancelled!");
             enableSaveRoll(false);
         }catch (Exception ex) {
@@ -458,6 +493,12 @@ public class jualMenu extends javax.swing.JFrame {
         // TODO add your handling code here:
         try {
             c.commit();
+            
+            PreparedStatement unlock = c.prepareStatement(
+                "UPDATE lock_status SET is_locked = FALSE, locked_by = NULL, locked_at = NULL WHERE id = 1"
+            );
+            unlock.executeUpdate();
+        
             JOptionPane.showMessageDialog(this, "Saved!");
             enableSaveRoll(false);
         }catch (Exception ex) {
