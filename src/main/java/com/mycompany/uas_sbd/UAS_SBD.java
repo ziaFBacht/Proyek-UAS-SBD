@@ -11,6 +11,7 @@ package com.mycompany.uas_sbd;
 public class UAS_SBD {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        //System.out.println("Hello World!");
+        new jualMenu().setVisible(true);
     }
 }
