@@ -6,14 +6,13 @@ package com.mycompany.uas_sbd;
 
 import java.sql.*;
 import javax.swing.*;
-import java.time.*;
 import javax.swing.table.DefaultTableModel;
 
 /**
  *
  * @author User
  */
-public class jualMenu extends javax.swing.JFrame {
+public class stokMenu extends javax.swing.JFrame {
 
     /**
      * Creates new form jualMenu
@@ -21,7 +20,7 @@ public class jualMenu extends javax.swing.JFrame {
     KoneksiMysql kon = new KoneksiMysql("uas_sbd");
     Connection c = kon.getConnection();
     
-    public jualMenu() {
+    public stokMenu() {
         initComponents();
         
         setLocationRelativeTo(null);
@@ -40,7 +39,7 @@ public class jualMenu extends javax.swing.JFrame {
     private boolean requestLock(String username) {
     try {
         // Cek apakah sedang dikunci user lain
-        PreparedStatement ps = c.prepareStatement("SELECT is_locked, locked_by FROM lock_status WHERE id = 2");
+        PreparedStatement ps = c.prepareStatement("SELECT is_locked, locked_by FROM lock_status WHERE id = 1");
         ResultSet rs = ps.executeQuery();
         if (rs.next()) {
             boolean isLocked = rs.getBoolean("is_locked");
@@ -60,7 +59,7 @@ public class jualMenu extends javax.swing.JFrame {
 
         // Ambil kunci
         PreparedStatement lock = c.prepareStatement(
-            "UPDATE lock_status SET is_locked = TRUE, locked_by = ?, locked_at = NOW() WHERE id = 2"
+            "UPDATE lock_status SET is_locked = TRUE, locked_by = ?, locked_at = NOW() WHERE id = 1"
         );
         lock.setString(1, username);
         lock.executeUpdate();
@@ -75,10 +74,10 @@ public class jualMenu extends javax.swing.JFrame {
 
     
     private void clearSet(){
-        kodeTransaksiText.setText(null);
-        tanggalTransaksiText.setText(null);
         kodeBarangText.setText(null);
-        jumlahJualText.setText(null);
+        namaBarangText.setText(null);
+        satuanText.setText(null);
+        jumlahText.setText(null);
     }
     
     private void enableSaveRoll(Boolean status){
@@ -106,14 +105,14 @@ public class jualMenu extends javax.swing.JFrame {
         jMenu1 = new javax.swing.JMenu();
         jMenuItem1 = new javax.swing.JMenuItem();
         jMenuItem2 = new javax.swing.JMenuItem();
-        kodeTransaksiText = new javax.swing.JTextField();
+        kodeBarangText = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
-        tanggalTransaksiText = new javax.swing.JTextField();
+        namaBarangText = new javax.swing.JTextField();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        kodeBarangText = new javax.swing.JTextField();
+        satuanText = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
-        jumlahJualText = new javax.swing.JTextField();
+        jumlahText = new javax.swing.JTextField();
         insertButton = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JSeparator();
         editButton = new javax.swing.JButton();
@@ -124,8 +123,6 @@ public class jualMenu extends javax.swing.JFrame {
         statusText = new javax.swing.JLabel();
         setUserButton = new javax.swing.JButton();
         displayButton = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
-        jSeparator1 = new javax.swing.JSeparator();
 
         jMenu1.setText("jMenu1");
 
@@ -136,35 +133,35 @@ public class jualMenu extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setResizable(false);
 
-        kodeTransaksiText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                kodeTransaksiTextActionPerformed(evt);
-            }
-        });
-
-        jLabel1.setText("Kode Transaksi");
-
-        tanggalTransaksiText.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                tanggalTransaksiTextActionPerformed(evt);
-            }
-        });
-
-        jLabel2.setText("Tanggal Transaksi");
-
-        jLabel3.setText("Kode Barang");
-
         kodeBarangText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 kodeBarangTextActionPerformed(evt);
             }
         });
 
-        jLabel4.setText("Jumlah Jual");
+        jLabel1.setText("Kode Barang");
 
-        jumlahJualText.addActionListener(new java.awt.event.ActionListener() {
+        namaBarangText.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jumlahJualTextActionPerformed(evt);
+                namaBarangTextActionPerformed(evt);
+            }
+        });
+
+        jLabel2.setText("Nama Barang");
+
+        jLabel3.setText("Satuan");
+
+        satuanText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                satuanTextActionPerformed(evt);
+            }
+        });
+
+        jLabel4.setText("Jumlah Stok");
+
+        jumlahText.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jumlahTextActionPerformed(evt);
             }
         });
 
@@ -231,15 +228,6 @@ public class jualMenu extends javax.swing.JFrame {
             }
         });
 
-        jButton1.setText("Quick Insert");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
-
-        jSeparator1.setOrientation(javax.swing.SwingConstants.VERTICAL);
-
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -253,33 +241,31 @@ public class jualMenu extends javax.swing.JFrame {
                         .addGap(16, 16, 16)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createSequentialGroup()
+                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(jumlahText, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addGroup(layout.createSequentialGroup()
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                                .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 90, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                        .addGap(18, 18, 18)
+                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                            .addComponent(namaBarangText, javax.swing.GroupLayout.PREFERRED_SIZE, 302, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(satuanText, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(kodeBarangText, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                                .addGap(0, 0, Short.MAX_VALUE))
+                            .addGroup(layout.createSequentialGroup()
                                 .addComponent(saveButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(resetButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                                 .addComponent(statusText, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 96, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addComponent(jumlahJualText, javax.swing.GroupLayout.PREFERRED_SIZE, 150, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(layout.createSequentialGroup()
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(jLabel2, javax.swing.GroupLayout.DEFAULT_SIZE, 96, Short.MAX_VALUE)
-                                            .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                            .addComponent(jLabel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(kodeTransaksiText, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(kodeBarangText, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                            .addComponent(tanggalTransaksiText))))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 11, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(jButton1))))
+                                .addComponent(cancelButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE))))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(16, 16, 16)
                         .addComponent(insertButton, javax.swing.GroupLayout.PREFERRED_SIZE, 75, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -307,25 +293,20 @@ public class jualMenu extends javax.swing.JFrame {
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(kodeTransaksiText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(kodeBarangText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                                .addComponent(tanggalTransaksiText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addComponent(jLabel2))
-                            .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, 22, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(kodeBarangText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel3))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jumlahJualText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jLabel4)))
-                    .addComponent(jButton1))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(namaBarangText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(satuanText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel3))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jumlahText, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel4))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(cancelButton)
@@ -338,38 +319,38 @@ public class jualMenu extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void kodeTransaksiTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kodeTransaksiTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_kodeTransaksiTextActionPerformed
-
-    private void tanggalTransaksiTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tanggalTransaksiTextActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_tanggalTransaksiTextActionPerformed
-
     private void kodeBarangTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_kodeBarangTextActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_kodeBarangTextActionPerformed
 
-    private void jumlahJualTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jumlahJualTextActionPerformed
+    private void namaBarangTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_namaBarangTextActionPerformed
         // TODO add your handling code here:
-    }//GEN-LAST:event_jumlahJualTextActionPerformed
+    }//GEN-LAST:event_namaBarangTextActionPerformed
+
+    private void satuanTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_satuanTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_satuanTextActionPerformed
+
+    private void jumlahTextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jumlahTextActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_jumlahTextActionPerformed
 
     private void insertButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_insertButtonActionPerformed
         // TODO add your handling code here:
         //JOptionPane.showMessageDialog(this, "inserted");
         if (requestLock(usern)) {
-            String kd_trns = kodeTransaksiText.getText();
-            String tgl_trns = tanggalTransaksiText.getText();
             String kd_brg = kodeBarangText.getText();
-            String jual = jumlahJualText.getText();
+            String nama_brg = namaBarangText.getText();
+            String satuan_brg = satuanText.getText();
+            String stok_brg = jumlahText.getText();
 
             try{
-                String sql = "CALL insert_penjualan(?, ?, ?, ?);";
+                String sql = "CALL insert_stok(?, ?, ?, ?);";
                 PreparedStatement stmt = c.prepareStatement(sql);
-                stmt.setString(1, kd_trns);
-                stmt.setString(2, tgl_trns);
-                stmt.setString(3, kd_brg);
-                stmt.setString(4, jual);
+                stmt.setString(1, kd_brg);
+                stmt.setString(2, nama_brg);
+                stmt.setString(3, satuan_brg);
+                stmt.setString(4, stok_brg);
                 stmt.executeUpdate();
 
                 JOptionPane.showMessageDialog(this, "Inserted!");
@@ -388,18 +369,18 @@ public class jualMenu extends javax.swing.JFrame {
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
         // TODO add your handling code here:
         if (requestLock(usern)) {
-            String kd_trns = kodeTransaksiText.getText();
-            String tgl_trns = tanggalTransaksiText.getText();
             String kd_brg = kodeBarangText.getText();
-            String jual = jumlahJualText.getText();
+            String nama_brg = namaBarangText.getText();
+            String satuan_brg = satuanText.getText();
+            String stok_brg = jumlahText.getText();
 
             try{
-                String sql = "CALL update_penjualan(?, ?, ?, ?);";
+                String sql = "CALL update_stok(?, ?, ?, ?);";
                 PreparedStatement stmt = c.prepareStatement(sql);
-                stmt.setString(1, kd_trns);
-                stmt.setString(2, tgl_trns);
-                stmt.setString(3, kd_brg);
-                stmt.setString(4, jual);
+                stmt.setString(1, kd_brg);
+                stmt.setString(2, nama_brg);
+                stmt.setString(3, satuan_brg);
+                stmt.setString(4, stok_brg);
                 stmt.executeUpdate();
 
                 JOptionPane.showMessageDialog(this, "Updated!");
@@ -417,13 +398,13 @@ public class jualMenu extends javax.swing.JFrame {
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         // TODO add your handling code here:
-        String kd_trns = kodeTransaksiText.getText();
+        String kd_brg = kodeBarangText.getText();
         
         if (requestLock(usern)) {
             try{
-                String sql = "CALL delete_penjualan(?);";
+                String sql = "CALL delete_stok(?);";
                 PreparedStatement stmt = c.prepareStatement(sql);
-                stmt.setString(1, kd_trns);
+                stmt.setString(1, kd_brg);
                 stmt.executeUpdate();
             
                 JOptionPane.showMessageDialog(this, "Deleted!");
@@ -444,7 +425,7 @@ public class jualMenu extends javax.swing.JFrame {
         try {
             c.rollback();
             
-            String sql = "UPDATE lock_status SET is_locked = FALSE, locked_by = NULL, locked_at = NULL WHERE id = 2";
+            String sql = "UPDATE lock_status SET is_locked = FALSE, locked_by = NULL, locked_at = NULL WHERE id = 1";
             PreparedStatement unlock = c.prepareStatement(sql);
             unlock.executeUpdate();
             
@@ -461,7 +442,7 @@ public class jualMenu extends javax.swing.JFrame {
     private void saveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_saveButtonActionPerformed
         // TODO add your handling code here:
         try {
-            String sql = "UPDATE lock_status SET is_locked = FALSE, locked_by = NULL, locked_at = NULL WHERE id = 2";
+            String sql = "UPDATE lock_status SET is_locked = FALSE, locked_by = NULL, locked_at = NULL WHERE id = 1";
             PreparedStatement unlock = c.prepareStatement(sql);
             unlock.executeUpdate();
             
@@ -488,15 +469,8 @@ public class jualMenu extends javax.swing.JFrame {
 
     private void displayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayButtonActionPerformed
         // TODO add your handling code here:
-        new tabelJual().setVisible(true);
+        new tabelStok().setVisible(true);
     }//GEN-LAST:event_displayButtonActionPerformed
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        // TODO add your handling code here:
-        LocalDate today = LocalDate.now();
-        String tanggalFormat = today.toString(); // format default = YYYY-MM-DD
-        tanggalTransaksiText.setText(tanggalFormat);
-    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -515,23 +489,21 @@ public class jualMenu extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(jualMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(stokMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(jualMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(stokMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(jualMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(stokMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(jualMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(stokMenu.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        //</editor-fold>
-        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new jualMenu().setVisible(true);
+                new stokMenu().setVisible(true);
             }
         });
     }
@@ -542,7 +514,6 @@ public class jualMenu extends javax.swing.JFrame {
     private javax.swing.JButton displayButton;
     private javax.swing.JButton editButton;
     private javax.swing.JButton insertButton;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -550,15 +521,14 @@ public class jualMenu extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JMenuItem jMenuItem2;
-    private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
-    private javax.swing.JTextField jumlahJualText;
+    private javax.swing.JTextField jumlahText;
     private javax.swing.JTextField kodeBarangText;
-    private javax.swing.JTextField kodeTransaksiText;
+    private javax.swing.JTextField namaBarangText;
     private javax.swing.JButton resetButton;
+    private javax.swing.JTextField satuanText;
     private javax.swing.JButton saveButton;
     private javax.swing.JButton setUserButton;
     private javax.swing.JLabel statusText;
-    private javax.swing.JTextField tanggalTransaksiText;
     // End of variables declaration//GEN-END:variables
 }
