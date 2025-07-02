@@ -30,16 +30,16 @@ public class KoneksiMysql {
             con = DriverManager.getConnection(this.url, this.usr, this.pwd);
             } catch (ClassNotFoundException e) {
             System.out.println ("Error #1 : " + e.getMessage());
-            System.exit(0);
+            // System.exit(0);
             } catch (SQLException e) {
             System.out.println ("Error #2 : " + e.getMessage());
-            System.exit(0);
+            // System.exit(0);
             }
         return con;
     }
     
     public static void main (String args[]) {
-        KoneksiMysql kon = new KoneksiMysql ("uas_sbd");
+        KoneksiMysql kon = new KoneksiMysql("uas_sbd");
         Connection c = kon.getConnection();
     }
 }

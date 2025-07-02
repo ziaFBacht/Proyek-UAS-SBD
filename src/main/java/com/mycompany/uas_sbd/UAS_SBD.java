@@ -12,6 +12,6 @@ public class UAS_SBD {
 
     public static void main(String[] args) {
         //System.out.println("Hello World!");
-        new stokMenu().setVisible(true);
+        new loginMenu().setVisible(true);
     }
 }

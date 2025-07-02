@@ -18,13 +18,18 @@ public class jualMenu extends javax.swing.JFrame {
     /**
      * Creates new form jualMenu
      */
-    KoneksiMysql kon = new KoneksiMysql("uas_sbd");
-    Connection c = kon.getConnection();
+    KoneksiMysql kon;
+    Connection c;
+    
+    String usern = "user123";
     
     public jualMenu() {
         initComponents();
         
         setLocationRelativeTo(null);
+        
+        kon = new KoneksiMysql("uas_sbd");
+        c = kon.getConnection();
                 
         try{
             c.setAutoCommit(false);
@@ -34,8 +39,24 @@ public class jualMenu extends javax.swing.JFrame {
         }
     }
     
-    String usern = "user123";
-          
+    public jualMenu(String user, String pass){
+        initComponents();
+        
+        setLocationRelativeTo(null);
+        
+        kon = new KoneksiMysql("localhost",user,pass,"uas_sbd");
+        c = kon.getConnection();
+                
+        usern = user;
+        setUserButton.setEnabled(false);
+        
+        try{
+            c.setAutoCommit(false);
+            c.setTransactionIsolation(Connection.TRANSACTION_READ_COMMITTED);
+        } catch (Exception ex) {
+           
+        }
+    }          
     
     private boolean requestLock(String username) {
     try {
