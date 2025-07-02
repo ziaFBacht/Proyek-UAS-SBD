@@ -24,6 +24,8 @@ public class jualMenu extends javax.swing.JFrame {
     String ruser;
     String rpass;
     
+    boolean editingData = false;
+    
     public jualMenu() {
         initComponents();
         
@@ -38,6 +40,18 @@ public class jualMenu extends javax.swing.JFrame {
         } catch (Exception ex) {
            
         }
+        
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                // This runs BEFORE the window actually closes
+                System.out.println("Window is closing...");
+                if (editingData = true){
+                    antiDeadlock();
+                }
+            }
+        });
+        
     }
     
     public jualMenu(String user, String pass){
@@ -79,6 +93,7 @@ public class jualMenu extends javax.swing.JFrame {
 
                 // Jika dikunci oleh user lain, tolak
                 JOptionPane.showMessageDialog(this, "Record is edited by another user (" + lockedBy + ")");
+                editingData = false;
                 return false;
             }
         }
@@ -90,7 +105,8 @@ public class jualMenu extends javax.swing.JFrame {
         lock.setString(1, username);
         lock.executeUpdate();
         c.commit();
-
+        
+        editingData = true;
         return true;
     } catch (SQLException ex) {
         ex.printStackTrace();
@@ -115,6 +131,24 @@ public class jualMenu extends javax.swing.JFrame {
         }else{
             statusText.setEnabled(false);
             statusText.setText("Tidak Ada Perubahan");
+        }
+    }
+    
+    private void antiDeadlock(){
+        if (editingData = true){
+            
+            try {
+                c.rollback();
+            
+                String sql = "UPDATE lock_status SET is_locked = FALSE, locked_by = NULL, locked_at = NULL WHERE id = 2";
+                PreparedStatement unlock = c.prepareStatement(sql);
+                unlock.executeUpdate();
+            
+                c.commit();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Failed Command");
+            }
         }
     }
     
@@ -476,6 +510,7 @@ public class jualMenu extends javax.swing.JFrame {
             c.commit();
             
             JOptionPane.showMessageDialog(this, "Cancelled!");
+            editingData = false;
             enableSaveRoll(false);
         }catch (Exception ex) {
             ex.printStackTrace();
@@ -493,6 +528,7 @@ public class jualMenu extends javax.swing.JFrame {
             c.commit();
         
             JOptionPane.showMessageDialog(this, "Saved!");
+            editingData = false;
             enableSaveRoll(false);
         }catch (Exception ex) {
             ex.printStackTrace();

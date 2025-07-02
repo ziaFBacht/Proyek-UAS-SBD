@@ -23,6 +23,8 @@ public class stokMenu extends javax.swing.JFrame {
     String ruser;
     String rpass;
     
+    Boolean editingData = false;
+    
     public stokMenu() {
         initComponents();
         
@@ -37,6 +39,18 @@ public class stokMenu extends javax.swing.JFrame {
         } catch (Exception ex) {
            
         }
+        
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                // This runs BEFORE the window actually closes
+                System.out.println("Window is closing...");
+                if (editingData = true){
+                    antiDeadlock();
+                }
+            }
+        });
+
     }
     
     public stokMenu(String user, String pass){
@@ -60,7 +74,18 @@ public class stokMenu extends javax.swing.JFrame {
         } catch (Exception ex) {
            
         }
+        
+        this.addWindowListener(new java.awt.event.WindowAdapter() {
+            @Override
+            public void windowClosing(java.awt.event.WindowEvent e) {
+                // This runs BEFORE the window actually closes
+                System.out.println("Window is closing...");
+                // Example: Save data or release resources
+            }
+        });
     }
+    
+    
           
     
     private boolean requestLock(String username) {
@@ -80,6 +105,7 @@ public class stokMenu extends javax.swing.JFrame {
 
                 // Jika dikunci oleh user lain, tolak
                 JOptionPane.showMessageDialog(this, "Record is edited by another user (" + lockedBy + ")");
+                editingData = false;
                 return false;
             }
         }
@@ -91,7 +117,8 @@ public class stokMenu extends javax.swing.JFrame {
         lock.setString(1, username);
         lock.executeUpdate();
         c.commit();
-
+        
+        editingData = true;
         return true;
     } catch (SQLException ex) {
         ex.printStackTrace();
@@ -119,6 +146,23 @@ public class stokMenu extends javax.swing.JFrame {
         }
     }
     
+    private void antiDeadlock(){
+        if (editingData = true){
+            
+            try {
+                c.rollback();
+            
+                String sql = "UPDATE lock_status SET is_locked = FALSE, locked_by = NULL, locked_at = NULL WHERE id = 1";
+                PreparedStatement unlock = c.prepareStatement(sql);
+                unlock.executeUpdate();
+            
+                c.commit();
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this, "Failed Command");
+            }
+        }
+    }
 
     /**
      * This method is called from within the constructor to initialize the form.
@@ -460,6 +504,7 @@ public class stokMenu extends javax.swing.JFrame {
             
             JOptionPane.showMessageDialog(this, "Cancelled!");
             enableSaveRoll(false);
+            editingData = false;
         }catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Failed Command");
@@ -477,6 +522,7 @@ public class stokMenu extends javax.swing.JFrame {
         
             JOptionPane.showMessageDialog(this, "Saved!");
             enableSaveRoll(false);
+            editingData = false;
         }catch (Exception ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(this, "Failed Command");
