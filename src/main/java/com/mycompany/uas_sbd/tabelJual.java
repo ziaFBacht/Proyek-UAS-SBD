@@ -20,12 +20,26 @@ public class tabelJual extends javax.swing.JFrame {
     /**
      * Creates new form tabelStok
      */
-    KoneksiMysql kon = new KoneksiMysql("uas_sbd");
-    Connection c = kon.getConnection();
+    KoneksiMysql kon;
+    Connection c;
     
     public tabelJual() {
         initComponents();
         setLocationRelativeTo(null);
+        
+        kon = new KoneksiMysql("uas_sbd");
+        c = kon.getConnection();
+        
+        loadContentsToTable();
+    }
+    
+    public tabelJual(String user, String pass){
+        initComponents();
+        setLocationRelativeTo(null);
+        
+        kon = new KoneksiMysql("localhost",user,pass,"uas_sbd");
+        c = kon.getConnection();
+        
         loadContentsToTable();
     }
     

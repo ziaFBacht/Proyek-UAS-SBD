@@ -6,7 +6,6 @@ package com.mycompany.uas_sbd;
 
 import java.sql.*;
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -21,6 +20,8 @@ public class stokMenu extends javax.swing.JFrame {
     Connection c;
     
     String usern = "user123";
+    String ruser;
+    String rpass;
     
     public stokMenu() {
         initComponents();
@@ -45,6 +46,10 @@ public class stokMenu extends javax.swing.JFrame {
         
         kon = new KoneksiMysql("localhost",user,pass,"uas_sbd");
         c = kon.getConnection();
+        
+        ruser = user;
+        rpass = pass;
+
                 
         usern = user;
         setUserButton.setEnabled(false);
@@ -491,7 +496,11 @@ public class stokMenu extends javax.swing.JFrame {
 
     private void displayButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_displayButtonActionPerformed
         // TODO add your handling code here:
-        new tabelStok().setVisible(true);
+        if (ruser != null){
+            new tabelStok(ruser,rpass).setVisible(true);
+        }else{
+            new tabelStok().setVisible(true);
+        }
     }//GEN-LAST:event_displayButtonActionPerformed
 
     /**
